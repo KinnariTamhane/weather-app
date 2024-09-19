@@ -4,11 +4,21 @@ import React, { useState, useEffect } from 'react';
 import { FaTemperatureHigh, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 import { WiDaySunny, WiRain, WiCloud } from 'react-icons/wi';
 
+interface WeatherData {
+  id : number;
+  country: string;
+  city: string; 
+  temperature: number;
+  latitude : number;
+  longitude : number ;
+  weather_description : string;
+}
+
 const WeatherApp = () => {
-  const [weatherData, setWeatherData] = useState<any[]>([])
+  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [isCelsius, setIsCelsius] = useState<Boolean>(true);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
-  const [selectedCity, setSelectedCity] = useState<any>('');
+  const [selectedCity, setSelectedCity] = useState<string>('');
   const [uniqueCountries, setUniqueCountries] = useState<string[]>([]);
 
   useEffect (()=>{
@@ -92,8 +102,8 @@ const WeatherApp = () => {
         {
           selectedCountry &&
           <div className='mb-6 flex items-center justify-left mt-3'>
-          <label htmlFor="country-select" className='text-black text-sm pr-4'>Select City:</label>
-          <select id="country-select" value={selectedCity} onChange={handleCityChange} className='text-black border border-black text-sm hover:border-black focus-visible:border-black px-2 py-1 rounded-md'>
+          <label htmlFor="city-select"  className='text-black text-sm pr-4'>Select City:</label>
+          <select id="city-select" value={selectedCity} onChange={handleCityChange} className='text-black border border-black text-sm hover:border-black focus-visible:border-black px-2 py-1 rounded-md'>
             <option value="">-- Choose a city --</option>
             {city && city.map((data,index) => (
               <option key={index} value={data.city} className='text-black border border-black text-sm'>
@@ -134,20 +144,11 @@ const WeatherApp = () => {
                 <FaTemperatureHigh className="text-orange-500 mr-2" />
                 <span className="text-gray-700">Weather: {item.weather_description || ''}</span>
               </div>
-              {/* <div className="flex items-center">
-                <FaClock className="text-blue-500 mr-2" />
-                <span className="text-gray-700">{item.forecast[0].date}</span>
-              </div> */}
             </div> 
           </div>
           )
         })
-
       }
-
-        {/* <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">Last updated: {new Date().toLocaleString()}</p>
-        </div> */}
       </div>
     </div>
   );
