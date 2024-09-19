@@ -9,14 +9,21 @@ const WeatherApp = () => {
   const [isCelsius, setIsCelsius] = useState<Boolean>(true);
   const [selectedCountry, setSelectedCountry] = useState<string>('');
   const [selectedCity, setSelectedCity] = useState<any>('');
-
+  const [uniqueCountries, setUniqueCountries] = useState<string[]>([]);
 
   useEffect (()=>{
      fetch ('https://freetestapi.com/api/v1/weathers')
      .then(response => response.json())
-     .then(data =>setWeatherData(data))
+     .then(data => {
+      setWeatherData(data)
+      const countries = data.map((item:any) => item.country);
+      const uniqueCountries = Array.from(new Set(countries));
+      const sortedUniqueCountries = uniqueCountries.sort((a:any, b:any) => a.localeCompare(b));
+      setUniqueCountries(sortedUniqueCountries as any);
+     }
+    )
   },[])
-
+  
   const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCode = event.target.value;
     setSelectedCountry(selectedCode);
@@ -27,7 +34,6 @@ const WeatherApp = () => {
     setSelectedCity(selectedCity);
   };
   
-
   const city = weatherData.filter((data) => selectedCountry ? data.country === selectedCountry : '');
   const selectedCityData =  city.filter((data) => selectedCity ? data.city === selectedCity : '');
 
@@ -72,12 +78,12 @@ const WeatherApp = () => {
         </div>
 
         <div className='mb-6 flex items-center justify-left mt-3'>
-          <label htmlFor="country-select" className='text-black text-sm pr-4'>Select a Country:</label>
+          <label htmlFor="country-select" className='text-black text-sm pr-4'>Select Country:</label>
           <select id="country-select" value={selectedCountry} onChange={handleCountryChange} className='text-black border border-black text-sm hover:border-black focus-visible:border-black px-2 py-1 rounded-md'>
             <option value="">-- Choose a country --</option>
-            {weatherData && weatherData.map((data) => (
-              <option key={data.country} value={data.country} className='text-black border border-black text-sm'>
-                {data.country}
+            {uniqueCountries.map((country, index) => (
+              <option key={index} value={country} className='text-black border border-black text-sm'>
+                {country}
               </option>
             ))}
           </select>
@@ -86,11 +92,11 @@ const WeatherApp = () => {
         {
           selectedCountry &&
           <div className='mb-6 flex items-center justify-left mt-3'>
-          <label htmlFor="country-select" className='text-black text-sm pr-4'>Select a City:</label>
+          <label htmlFor="country-select" className='text-black text-sm pr-4'>Select City:</label>
           <select id="country-select" value={selectedCity} onChange={handleCityChange} className='text-black border border-black text-sm hover:border-black focus-visible:border-black px-2 py-1 rounded-md'>
             <option value="">-- Choose a city --</option>
-            {city && city.map((data) => (
-              <option key={data.city} value={data.city} className='text-black border border-black text-sm'>
+            {city && city.map((data,index) => (
+              <option key={index} value={data.city} className='text-black border border-black text-sm'>
                 {data.city}
               </option>
             ))}
@@ -101,8 +107,8 @@ const WeatherApp = () => {
       {
         selectedCityData && selectedCityData.map((item)=>{
           return(
-            <>
-            <div className="mb-6 flex items-center justify-center" key={item.id}>
+            <div key={item.id}>
+            <div className="mb-6 flex items-center justify-center">
             <div className="relative flex mt-3">
             {getWeatherIcon()}
               <div className=" inset-0 flex items-center justify-center">
@@ -128,12 +134,12 @@ const WeatherApp = () => {
                 <FaTemperatureHigh className="text-orange-500 mr-2" />
                 <span className="text-gray-700">Weather: {item.weather_description || ''}</span>
               </div>
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <FaClock className="text-blue-500 mr-2" />
                 <span className="text-gray-700">{item.forecast[0].date}</span>
-              </div>
+              </div> */}
             </div> 
-          </>
+          </div>
           )
         })
 
